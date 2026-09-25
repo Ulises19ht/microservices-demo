@@ -30,5 +30,8 @@ jobs:
             ulisestec/frontend:latest
             ulisestec/frontend:${{ github.sha }}
 
+      - name: Preparar dependencias de Helm
+        run: helm dependency build ./helm-chart
+
       - name: CD - Desplegar en Kubernetes usando Helm Chart
-        run: helm upgrade --install online-boutique ./helm-chart --set frontend.image.repository=ulisestec/frontend --set frontend.image.tag=latest
+        run: helm upgrade --install online-boutique ./helm-chart
