@@ -31,7 +31,4 @@ jobs:
             ulisestec/frontend:${{ github.sha }}
 
       - name: CD - Desplegar en Kubernetes usando Helm Chart
-        run: |
-          helm upgrade --install online-boutique ./helm-chart `
-            --set frontend.image.repository=ulisestec/frontend `
-            --set frontend.image.tag=latest
+        run: helm upgrade --install online-boutique ./helm-chart --set frontend.image.repository=ulisestec/frontend --set frontend.image.tag=latest
