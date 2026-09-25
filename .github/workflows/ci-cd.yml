@@ -1,11 +1,15 @@
-name: Build, Push and Deploy to Local Cluster
+name: CI/CD Pipeline with Helm Chart
 
 on:
   push:
     branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+    types: [ closed ]
 
 jobs:
   build-push-deploy:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: self-hosted
     steps:
       - name: Descargar el código del repositorio
@@ -17,7 +21,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Compilar y publicar imagen del Frontend
+      - name: CI - Compilar y publicar imagen del Frontend
         uses: docker/build-push-action@v5
         with:
           context: ./src/frontend
@@ -26,7 +30,8 @@ jobs:
             ulisestec/frontend:latest
             ulisestec/frontend:${{ github.sha }}
 
-      - name: Desplegar directamente al clúster local
+      - name: CD - Desplegar en Kubernetes usando Helm Chart
         run: |
-          kubectl set image deployment/frontend server=ulisestec/frontend:latest
-          kubectl rollout status deployment/frontend
+          helm upgrade --install online-boutique ./helm-chart `
+            --set frontend.image.repository=ulisestec/frontend `
+            --set frontend.image.tag=latest
