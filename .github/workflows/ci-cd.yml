@@ -1,12 +1,12 @@
-name: Build and Push Docker Image
+name: Build, Push and Deploy to Local Cluster
 
 on:
   push:
     branches: [ "main", "master" ]
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+  build-push-deploy:
+    runs-on: self-hosted
     steps:
       - name: Descargar el código del repositorio
         uses: actions/checkout@v4
@@ -25,3 +25,8 @@ jobs:
           tags: |
             ulisestec/frontend:latest
             ulisestec/frontend:${{ github.sha }}
+
+      - name: Desplegar directamente al clúster local
+        run: |
+          kubectl set image deployment/frontend server=ulisestec/frontend:latest
+          kubectl rollout status deployment/frontend
