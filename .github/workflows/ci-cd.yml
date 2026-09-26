@@ -34,4 +34,4 @@ jobs:
         run: helm dependency build ./helm-chart
 
       - name: CD - Desplegar en Kubernetes usando Helm Chart
-        run: helm upgrade --install online-boutique ./helm-chart
+        run: helm upgrade --install online-boutique ./helm-chart --force
