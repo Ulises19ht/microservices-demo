@@ -1,0 +1,24 @@
+name: Test Vault Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-vault:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ vars.VAULT_ADDR }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            secret/data/online-boutique/dockerhub username | DOCKERHUB_USERNAME ;
+            secret/data/online-boutique/dockerhub token | DOCKERHUB_TOKEN
+
+      - name: Verify Login Succeeded
+        run: |
+          echo "Login Succeeded! Username retrieved from Vault."
