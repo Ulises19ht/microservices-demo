@@ -15,11 +15,21 @@ jobs:
       - name: Descargar el código del repositorio
         uses: actions/checkout@v4
 
+      # Inyectar credenciales desde Vault
+      - name: Import Secrets from Vault
+        uses: hashicorp/vault-action@v3
+        with:
+          url: ${{ vars.VAULT_ADDR }}
+          token: ${{ secrets.VAULT_TOKEN }}
+          secrets: |
+            secret/data/online-boutique/dockerhub username | DOCKERHUB_USERNAME ;
+            secret/data/online-boutique/dockerhub token | DOCKERHUB_TOKEN
+
       - name: Iniciar sesión en Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
 
       - name: CI - Compilar y publicar imagen del Frontend
         uses: docker/build-push-action@v5
