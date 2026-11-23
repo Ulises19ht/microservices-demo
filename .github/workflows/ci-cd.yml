@@ -11,6 +11,20 @@ on:
 jobs:
   build-push-deploy:
     runs-on: self-hosted
+    strategy:
+      matrix:
+        service:
+          - adservice
+          - cartservice
+          - checkoutservice
+          - currencyservice
+          - emailservice
+          - frontend
+          - loadgenerator
+          - paymentservice
+          - productcatalogservice
+          - recommendationservice
+          - shippingservice
     steps:
       - name: Descargar el código del repositorio
         uses: actions/checkout@v4
@@ -31,14 +45,14 @@ jobs:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
 
-      - name: CI - Compilar y publicar imagen del Frontend
+      - name: CI - Compilar y publicar imagen de ${{ matrix.service }}
         uses: docker/build-push-action@v5
         with:
-          context: ./src/frontend
+          context: ./src/${{ matrix.service }}
           push: true
           tags: |
-            ulisestec/frontend:latest
-            ulisestec/frontend:${{ github.sha }}
+            ulisestec/${{ matrix.service }}:latest
+            ulisestec/${{ matrix.service }}:${{ github.sha }}
 
       - name: Preparar dependencias de Helm
         run: helm dependency build ./helm-chart
