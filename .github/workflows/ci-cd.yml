@@ -33,7 +33,7 @@ jobs:
       - name: Import Secrets from Vault
         uses: hashicorp/vault-action@v3
         with:
-          url: http://13.221.134.81:8200
+          url: https://127.0.0.1:8200
           token: ${{ secrets.VAULT_TOKEN }}
           method: token
           secrets: |
