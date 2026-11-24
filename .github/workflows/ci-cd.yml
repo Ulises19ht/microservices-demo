@@ -36,10 +36,11 @@ jobs:
           url: https://127.0.0.1:8200
           token: ${{ secrets.VAULT_TOKEN }}
           method: token
+          tlsSkipVerify: true
           secrets: |
-            secret/data/online-boutique/dockerhub username | DOCKERHUB_USERNAME ;
+            secret/data/online-boutique/dockerhub username | DOCKERHUB_USERNAME
             secret/data/online-boutique/dockerhub token | DOCKERHUB_TOKEN
-
+            
       - name: Iniciar sesión en Docker Hub
         uses: docker/login-action@v3
         with:
