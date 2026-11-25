@@ -32,7 +32,7 @@ jobs:
       # Inyectar credenciales desde Vault usando CLI directa
       - name: Import Secrets from Vault
         env:
-          VAULT_ADDR: http://172.28.232.26:8200
+          VAULT_ADDR: http://127.0.0.1:8200
           VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
         run: |
           SECRET_JSON=$(vault kv get -format=json secret/online-boutique/dockerhub)
