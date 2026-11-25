@@ -52,8 +52,8 @@ jobs:
       - name: CI - Compilar y publicar imagen de ${{ matrix.service }}
         uses: docker/build-push-action@v5
         with:
-          context: ./src/${{ matrix.service }}
-          file: ${{ matrix.service == 'cartservice' && 'src/cartservice/src/Dockerfile' || format('src/{0}/Dockerfile', matrix.service) }}
+          context: ${{ matrix.service == 'cartservice' && './src/cartservice/src' || format('./src/{0}', matrix.service) }}
+          file: ${{ matrix.service == 'cartservice' && './src/cartservice/src/Dockerfile' || format('./src/{0}/Dockerfile', matrix.service) }}
           push: true
           tags: |
             ulisestec/${{ matrix.service }}:latest
