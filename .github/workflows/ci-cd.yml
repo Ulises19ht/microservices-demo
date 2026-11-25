@@ -29,17 +29,19 @@ jobs:
       - name: Descargar el código del repositorio
         uses: actions/checkout@v4
 
-      # Inyectar credenciales desde Vault
+      # Inyectar credenciales desde Vault usando CLI directa
       - name: Import Secrets from Vault
-        uses: hashicorp/vault-action@v3
-        with:
-          url: http://172.28.232.26:8200
-          token: ${{ secrets.VAULT_TOKEN }}
-          method: token
-          tlsSkipVerify: true
-          secrets: |
-            secret/data/online-boutique/dockerhub username | DOCKERHUB_USERNAME
-            secret/data/online-boutique/dockerhub token | DOCKERHUB_TOKEN
+        env:
+          VAULT_ADDR: http://172.28.232.26:8200
+          VAULT_TOKEN: ${{ secrets.VAULT_TOKEN }}
+        run: |
+          SECRET_JSON=$(vault kv get -format=json secret/online-boutique/dockerhub)
+          
+          DOCKER_USER=$(echo "$SECRET_JSON" | jq -r '.data.data.username')
+          DOCKER_TOK=$(echo "$SECRET_JSON" | jq -r '.data.data.token')
+          
+          echo "DOCKERHUB_USERNAME=$DOCKER_USER" >> $GITHUB_ENV
+          echo "DOCKERHUB_TOKEN=$DOCKER_TOK" >> $GITHUB_ENV
 
       - name: Iniciar sesión en Docker Hub
         uses: docker/login-action@v3
@@ -60,4 +62,4 @@ jobs:
         run: helm dependency build ./helm-chart
 
       - name: CD - Desplegar en Kubernetes usando Helm Chart
-        run: helm upgrade --install online-boutique ./helm-chart --forcenline-boutique ./helm-chart --force
+        run: helm upgrade --install online-boutique ./helm-chart --force
